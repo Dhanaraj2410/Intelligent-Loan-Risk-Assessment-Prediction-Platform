@@ -1,0 +1,238 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Result Card -->
+        <div class="card shadow {% if prediction == 'Approved' %}border-success{% else %}border-danger{% endif %}">
+            <div class="card-header {% if prediction == 'Approved' %}bg-success{% else %}bg-danger{% endif %} text-white text-center">
+                <h3 class="mb-0">
+                    <i class="fas fa-{% if prediction == 'Approved' %}check-circle{% else %}times-circle{% endif %} me-2"></i>
+                    Loan {{ prediction }}
+                </h3>
+            </div>
+            <div class="card-body text-center py-5">
+                <!-- Probability Circle -->
+                <div class="position-relative d-inline-block">
+                    <div class="progress-circle" style="width: 150px; height: 150px;">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" stroke-dasharray="{{ probability }}, 100"
+                                d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div class="percentage">
+                            <span class="display-4 fw-bold">{{ probability|floatformat:1 }}%</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-muted mt-3">Confidence Level</p>
+            </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Application Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Gender</label>
+                            <p class="fw-bold">{{ data.gender }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Married</label>
+                            <p class="fw-bold">{{ data.married }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Dependents</label>
+                            <p class="fw-bold">{{ data.dependents }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Education</label>
+                            <p class="fw-bold">{{ data.education }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Self Employed</label>
+                            <p class="fw-bold">{{ data.self_employed }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Property Area</label>
+                            <p class="fw-bold">{{ data.property_area }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Applicant Income</label>
+                            <p class="fw-bold">${{ data.applicant_income|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Coapplicant Income</label>
+                            <p class="fw-bold">${{ data.coapplicant_income|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Loan Amount</label>
+                            <p class="fw-bold">${{ data.loan_amount|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <label class="text-muted small">Loan Term</label>
+                            <p class="fw-bold">{{ data.loan_amount_term|floatformat:0 }} months</p>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="detail-item">
+                            <label class="text-muted small">Credit History</label>
+                            <p class="fw-bold">
+                                <span class="badge {% if data.credit_history == 1 %}bg-success{% else %}bg-danger{% endif %}">
+                                    {% if data.credit_history == 1 %}Good{% else %}Bad{% endif %}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-comment me-2"></i>Was this prediction accurate?
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-success" onclick="submitFeedback({{ prediction_id }}, true)">
+                        <i class="fas fa-thumbs-up me-1"></i>Yes, Correct
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="submitFeedback({{ prediction_id }}, false)">
+                        <i class="fas fa-thumbs-down me-1"></i>No, Incorrect
+                    </button>
+                </div>
+                <div id="feedbackMessage" class="mt-2"></div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+            <a href="{% url 'predictor:predict' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Make Another Prediction
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.circular-chart {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 250px;
+}
+.circle-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.8;
+}
+.circle {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    animation: progress 1s ease-out forwards;
+}
+.circle {
+    stroke: {% if prediction == 'Approved' %}#28a745{% else %}#dc3545{% endif %};
+}
+@keyframes progress {
+    0% { stroke-dasharray: 0, 100; }
+}
+.percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+}
+.detail-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.detail-item:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function submitFeedback(predictionId, isCorrect) {
+    const messageDiv = document.getElementById('feedbackMessage');
+    messageDiv.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Submitting...';
+    
+    fetch('{% url "predictor:feedback" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            prediction_id: predictionId,
+            is_correct: isCorrect,
+            comment: ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            messageDiv.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>${data.message}
+                </div>
+            `;
+            // Disable buttons
+            document.querySelectorAll('.btn-group button').forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            });
+        } else {
+            messageDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>${data.error || 'Error submitting feedback'}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        messageDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>Network error. Please try again.
+            </div>
+        `;
+    });
+}
+</script>
+{% endblock %}

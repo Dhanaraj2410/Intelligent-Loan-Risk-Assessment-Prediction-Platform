@@ -1,0 +1,106 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Hero Section -->
+        <div class="text-center py-5">
+            <h1 class="display-4 fw-bold text-primary">
+                <i class="fas fa-hand-holding-usd"></i> Loan Prediction System
+            </h1>
+            <p class="lead text-muted">
+                Predict loan approval using machine learning. Enter your details and get instant results.
+            </p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card text-center h-100 border-primary">
+                    <div class="card-body">
+                        <i class="fas fa-check-circle text-primary fa-3x mb-3"></i>
+                        <h3 class="h5">Quick Prediction</h3>
+                        <p class="text-muted">Get results in seconds with our ML model</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center h-100 border-success">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line text-success fa-3x mb-3"></i>
+                        <h3 class="h5">94% Accuracy</h3>
+                        <p class="text-muted">Trained on real loan data</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center h-100 border-info">
+                    <div class="card-body">
+                        <i class="fas fa-shield-alt text-info fa-3x mb-3"></i>
+                        <h3 class="h5">Secure & Private</h3>
+                        <p class="text-muted">Your data is safe and encrypted</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-user me-2 text-primary"></i>Personal Information
+                        </h5>
+                        <ul class="list-unstyled text-muted">
+                            <li>✓ Gender</li>
+                            <li>✓ Marital Status</li>
+                            <li>✓ Number of Dependents</li>
+                            <li>✓ Education Level</li>
+                            <li>✓ Employment Status</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-coins me-2 text-success"></i>Financial Details
+                        </h5>
+                        <ul class="list-unstyled text-muted">
+                            <li>✓ Applicant Income</li>
+                            <li>✓ Coapplicant Income</li>
+                            <li>✓ Loan Amount</li>
+                            <li>✓ Loan Term</li>
+                            <li>✓ Credit History</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="text-center mt-5">
+            <a href="{% url 'predictor:predict' %}" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-arrow-right me-2"></i>Get Started
+            </a>
+        </div>
+
+        <!-- Model Status -->
+        <div class="mt-4 text-center">
+            <small class="text-muted">
+                <i class="fas fa-microchip"></i>
+                {% if model_loaded %}
+                    Model loaded successfully
+                    <span class="badge bg-success ms-2">Active</span>
+                {% else %}
+                    Model not loaded
+                    <span class="badge bg-danger ms-2">Inactive</span>
+                {% endif %}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

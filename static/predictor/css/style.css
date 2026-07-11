@@ -1,0 +1,261 @@
+/* Main Styles */
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+}
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.navbar-brand i {
+    color: #ffd700;
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(13, 110, 253, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #198754, #157347);
+    border: none;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #b02a37);
+    border: none;
+}
+
+/* Progress Circle */
+.progress-circle {
+    position: relative;
+    display: inline-block;
+}
+
+.circular-chart {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 250px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #e9ecef;
+    stroke-width: 3.8;
+}
+
+.circle {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+    0% { stroke-dasharray: 0, 100; }
+}
+
+/* Detail Items */
+.detail-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.detail-item p {
+    font-weight: 600;
+    margin-bottom: 0;
+    color: #212529;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card:hover {
+        transform: none;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Loading Animation */
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 6px 12px;
+    font-weight: 600;
+}
+
+/* Table Styles */
+.table {
+    font-size: 0.9rem;
+}
+
+.table th {
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Stats Cards */
+.stats-card {
+    text-align: center;
+    padding: 20px;
+}
+
+.stats-card .icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.stats-card .number {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stats-card .label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Feedback Buttons */
+.feedback-btn {
+    min-width: 120px;
+}
+
+.feedback-btn i {
+    font-size: 1.2rem;
+}
+
+/* Form Help Text */
+.form-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* Container Width */
+.container {
+    max-width: 1200px;
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .footer, .btn, .no-print {
+        display: none !important;
+    }
+    .card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd;
+    }
+    .card:hover {
+        transform: none !important;
+    }
+}

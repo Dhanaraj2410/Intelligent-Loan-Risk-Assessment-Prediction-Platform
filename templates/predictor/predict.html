@@ -1,0 +1,252 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-calculator me-2"></i>Loan Prediction Form
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="predictionForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <!-- Personal Information -->
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 text-primary">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_gender" class="form-label fw-bold">Gender</label>
+                                {{ form.gender }}
+                                {% if form.gender.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.gender.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_married" class="form-label fw-bold">Married</label>
+                                {{ form.married }}
+                                {% if form.married.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.married.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_dependents" class="form-label fw-bold">Dependents</label>
+                                {{ form.dependents }}
+                                {% if form.dependents.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.dependents.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_education" class="form-label fw-bold">Education</label>
+                                {{ form.education }}
+                                {% if form.education.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.education.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_self_employed" class="form-label fw-bold">Self Employed</label>
+                                {{ form.self_employed }}
+                                {% if form.self_employed.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.self_employed.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 text-primary mt-3">
+                                <i class="fas fa-coins me-2"></i>Financial Information
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_applicant_income" class="form-label fw-bold">
+                                    <i class="fas fa-dollar-sign text-success"></i> Applicant Income
+                                </label>
+                                {{ form.applicant_income }}
+                                {% if form.applicant_income.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.applicant_income.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_coapplicant_income" class="form-label fw-bold">
+                                    <i class="fas fa-dollar-sign text-info"></i> Coapplicant Income
+                                </label>
+                                {{ form.coapplicant_income }}
+                                {% if form.coapplicant_income.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.coapplicant_income.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_loan_amount" class="form-label fw-bold">
+                                    <i class="fas fa-hand-holding-usd text-warning"></i> Loan Amount
+                                </label>
+                                {{ form.loan_amount }}
+                                {% if form.loan_amount.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.loan_amount.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_loan_amount_term" class="form-label fw-bold">
+                                    <i class="fas fa-clock text-secondary"></i> Loan Term (Months)
+                                </label>
+                                {{ form.loan_amount_term }}
+                                {% if form.loan_amount_term.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.loan_amount_term.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_credit_history" class="form-label fw-bold">
+                                    <i class="fas fa-credit-card text-danger"></i> Credit History (0 or 1)
+                                </label>
+                                {{ form.credit_history }}
+                                <div class="form-text">
+                                    <span class="badge bg-success">1</span> Good credit score
+                                    <span class="badge bg-danger ms-2">0</span> Bad credit score
+                                </div>
+                                {% if form.credit_history.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.credit_history.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_property_area" class="form-label fw-bold">
+                                    <i class="fas fa-map-marker-alt text
+                                                                    <i class="fas fa-map-marker-alt text-primary"></i> Property Area
+                            </label>
+                            {{ form.property_area }}
+                            {% if form.property_area.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.property_area.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="predictBtn">
+                            <i class="fas fa-rocket me-2"></i>Predict Loan Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4 bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-info-circle text-info me-2"></i>About this prediction
+                </h6>
+                <p class="card-text text-muted small">
+                    This prediction is based on a Logistic Regression model trained on historical loan data 
+                    with <strong>94% accuracy</strong>. The model considers multiple factors including 
+                    income, credit history, and demographic information.
+                </p>
+                <div class="row">
+                    <div class="col-6">
+                        <span class="badge bg-success">Approved</span>
+                        <span class="badge bg-danger">Rejected</span>
+                    </div>
+                    <div class="col-6 text-end">
+                        <span class="badge bg-info">⚡ Instant Results</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('predictionForm');
+    const predictBtn = document.getElementById('predictBtn');
+    
+    form.addEventListener('submit', function(e) {
+        // Show loading state
+        predictBtn.disabled = true;
+        predictBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        
+        // Validate credit history
+        const creditHistory = document.getElementById('id_credit_history');
+        if (creditHistory && creditHistory.value !== '') {
+            const val = parseFloat(creditHistory.value);
+            if (val !== 0 && val !== 1) {
+                e.preventDefault();
+                alert('Credit history must be either 0 or 1');
+                predictBtn.disabled = false;
+                predictBtn.innerHTML = '<i class="fas fa-rocket me-2"></i>Predict Loan Status';
+                return;
+            }
+        }
+    });
+    
+    // Add input validation for numeric fields
+    const numericInputs = document.querySelectorAll('input[type="number"]');
+    numericInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value && parseFloat(this.value) < 0) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
