@@ -112,3 +112,27 @@ loan_prediction/
 ├── requirements.txt           # Python package dependencies
 └── Procfile                   # Gunicorn deployment configuration
 ```
+
+---
+
+## 👨‍💻 Author
+
+**Dhanraj Lokhande**
+- Python Developer | Data Analyst | ML Enthusiast | Django Developer
+- GitHub: [@Dhanaraj2410](https://github.com/Dhanaraj2410)
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is open source and available for educational purposes.
