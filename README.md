@@ -85,3 +85,30 @@ python manage.py runserver 8005
 ```
 
 Visit `http://127.0.0.1:8005/` in your browser.
+
+---
+
+## 📁 Project Directory Structure
+
+```
+loan_prediction/
+├── data/raw/                  # Raw training CSV dataset
+├── models/
+│   ├── ml/                    # Serialized sklearn pipelines (.pkl)
+│   ├── dl/                    # Deep Learning ANN model (.keras)
+│   └── preprocessing/         # Fitted preprocessor & feature names
+├── src/
+│   ├── data/                  # Preprocessing & feature engineering modules
+│   ├── ml/                    # ML model training, evaluation & tuning
+│   └── dl/                    # Deep Learning ANN training & inference
+├── predictor/                 # Django app (models, views, forms, urls)
+├── templates/predictor/       # HTML templates (landing, dashboard, predict, result)
+├── static/                    # CSS stylesheets & JavaScript files
+├── tests/                     # Unit tests (models, forms, API)
+├── reports/                   # Model comparison CSV & visualization figures
+├── notebooks/                 # Jupyter notebooks for EDA & training
+├── scripts/                   # Utility scripts (notebook generation)
+├── manage.py                  # Django management command entry point
+├── requirements.txt           # Python package dependencies
+└── Procfile                   # Gunicorn deployment configuration
+```
