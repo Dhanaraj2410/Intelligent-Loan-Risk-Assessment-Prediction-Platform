@@ -1,0 +1,101 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block title %}LoanIQ — Intelligent Loan Risk Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row align-items-center py-5">
+    <div class="col-lg-7">
+        <div class="pe-lg-5">
+            <span class="badge bg-blue-100 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+                <i class="fa-solid fa-sparkles me-1"></i> AI-Powered Financial Underwriting
+            </span>
+            <h1 class="display-4 fw-extrabold text-slate-900 mb-3" style="font-weight: 800;">
+                INTELLIGENT LOAN RISK ASSESSMENT
+            </h1>
+            <p class="fs-5 text-slate-600 mb-4" style="color: #475569;">
+                AI-powered analysis for smarter loan risk evaluation. Evaluate applicant profiles using Machine Learning ensembles and Deep Neural Networks (ANN).
+            </p>
+            <div class="d-flex flex-wrap gap-3 mb-5">
+                <a href="{% url 'predictor:predict' %}" class="btn-blue fs-6 py-3 px-4">
+                    <i class="fa-solid fa-play"></i> Start Assessment Now
+                </a>
+                <a href="{% url 'predictor:dashboard' %}" class="btn btn-outline-secondary fs-6 py-3 px-4" style="border-radius: var(--radius-sm);">
+                    <i class="fa-solid fa-chart-pie me-1"></i> Explore Analytics Dashboard
+                </a>
+            </div>
+
+            <!-- Checklist Pillars -->
+            <div class="row g-3 text-slate-700 font-medium">
+                <div class="col-6 col-md-4"><i class="fa-solid fa-circle-check text-success me-2"></i>Machine Learning</div>
+                <div class="col-6 col-md-4"><i class="fa-solid fa-circle-check text-success me-2"></i>Deep Learning (ANN)</div>
+                <div class="col-6 col-md-4"><i class="fa-solid fa-circle-check text-success me-2"></i>0-100 Risk Scoring</div>
+                <div class="col-6 col-md-4"><i class="fa-solid fa-circle-check text-success me-2"></i>Model Comparison</div>
+                <div class="col-6 col-md-4"><i class="fa-solid fa-circle-check text-success me-2"></i>REST API Integration</div>
+                <div class="col-6 col-md-4"><i class="fa-solid fa-circle-check text-success me-2"></i>Database Logging</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Feature Card -->
+    <div class="col-lg-5 mt-4 mt-lg-0">
+        <div class="saas-card shadow-lg p-4 border-0">
+            <h4 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-microchip text-primary me-2"></i>Enterprise AI Engine</h4>
+            <div class="d-flex flex-column gap-3">
+                <div class="p-3 bg-light rounded-3 border">
+                    <div class="fw-bold text-slate-800"><i class="fa-solid fa-bolt text-warning me-2"></i>Sub-Second Inference</div>
+                    <small class="text-muted">Scikit-learn ColumnTransformer guarantees zero inference lag.</small>
+                </div>
+                <div class="p-3 bg-light rounded-3 border">
+                    <div class="fw-bold text-slate-800"><i class="fa-solid fa-shield-check text-success me-2"></i>Model Consensus</div>
+                    <small class="text-muted">Cross-validation across XGBoost, Random Forest, Logistic Regression, and ANN.</small>
+                </div>
+                <div class="p-3 bg-light rounded-3 border">
+                    <div class="fw-bold text-slate-800"><i class="fa-solid fa-calculator text-info me-2"></i>Risk Scoring & Categories</div>
+                    <small class="text-muted">Generates approval probability and LOW, MEDIUM, or HIGH risk ratings.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="py-5 border-top border-bottom my-4">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-slate-900">How LoanIQ Works</h2>
+        <p class="text-muted">A streamlined 4-step workflow from applicant data to risk evaluation.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="saas-card text-center h-100 p-4">
+                <div class="badge bg-primary rounded-circle fs-5 mb-3" style="width: 45px; height: 45px; line-height: 32px;">01</div>
+                <h5 class="fw-bold mb-2">Enter Applicant Data</h5>
+                <p class="text-muted small mb-0">Input income, loan terms, credit history, and demographic details into the multi-step wizard.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="saas-card text-center h-100 p-4">
+                <div class="badge bg-primary rounded-circle fs-5 mb-3" style="width: 45px; height: 45px; line-height: 32px;">02</div>
+                <h5 class="fw-bold mb-2">Feature Preprocessing</h5>
+                <p class="text-muted small mb-0">Engineered domain features (Total Income, Loan-to-Income, EMI) scaled and encoded.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="saas-card text-center h-100 p-4">
+                <div class="badge bg-primary rounded-circle fs-5 mb-3" style="width: 45px; height: 45px; line-height: 32px;">03</div>
+                <h5 class="fw-bold mb-2">AI Models & ANN</h5>
+                <p class="text-muted small mb-0">Trained XGBoost, Random Forest, and PyTorch Neural Network calculate approval probabilities.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="saas-card text-center h-100 p-4">
+                <div class="badge bg-primary rounded-circle fs-5 mb-3" style="width: 45px; height: 45px; line-height: 32px;">04</div>
+                <h5 class="fw-bold mb-2">Risk Score Generated</h5>
+                <p class="text-muted small mb-0">Produces 0-100 Risk Score, Low/Med/High category, and model consensus breakdown.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

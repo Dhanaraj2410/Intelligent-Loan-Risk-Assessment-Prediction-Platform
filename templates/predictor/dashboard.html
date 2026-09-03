@@ -1,0 +1,193 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — LoanIQ Platform{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-extrabold text-slate-900 mb-1" style="font-weight: 800;">Platform Dashboard</h2>
+        <p class="text-muted mb-0">Real-time risk analytics, model performance, and recent loan assessment logs.</p>
+    </div>
+    <a href="{% url 'predictor:predict' %}" class="btn-blue">
+        <i class="fa-solid fa-plus"></i> New Loan Assessment
+    </a>
+</div>
+
+<!-- 4 Top Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="metric-label">Total Assessments</span>
+                <div class="p-2 bg-blue-50 text-primary rounded"><i class="fa-solid fa-file-invoice"></i></div>
+            </div>
+            <div class="metric-val">{{ total_count }}</div>
+            <small class="text-success fw-semibold"><i class="fa-solid fa-arrow-up me-1"></i>Live Database Log</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="metric-label">Approval Rate</span>
+                <div class="p-2 bg-emerald-50 text-success rounded"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+            <div class="metric-val">{{ approval_rate }}%</div>
+            <small class="text-muted">Historical Approval %</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="metric-label">Avg Risk Score</span>
+                <div class="p-2 bg-amber-50 text-warning rounded"><i class="fa-solid fa-shield-halved"></i></div>
+            </div>
+            <div class="metric-val">{{ avg_risk_score }}</div>
+            <small class="text-muted">Scale 0 (Safe) to 100 (High Risk)</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="metric-label">Best Model Engine</span>
+                <div class="p-2 bg-purple-50 text-purple rounded"><i class="fa-solid fa-microchip"></i></div>
+            </div>
+            <div class="metric-val fs-4">{{ best_model_name }}</div>
+            <small class="text-primary fw-semibold"><i class="fa-solid fa-star me-1"></i>Cross-Validated Champion</small>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="saas-card h-100">
+            <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-chart-pie text-primary me-2"></i>Risk Category Distribution</h5>
+            <div style="position: relative; height: 260px;">
+                <canvas id="riskDistChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="saas-card h-100">
+            <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-bolt text-warning me-2"></i>Quick Action & Workflow</h5>
+            <p class="text-muted small">Evaluate new applicant profiles with zero manual setup. Runs 7 classical ML models + Keras ANN in parallel.</p>
+            <div class="d-flex flex-column gap-3 mt-4">
+                <a href="{% url 'predictor:predict' %}" class="btn btn-outline-primary p-3 text-start d-flex align-items-center justify-content-between" style="border-radius: var(--radius-sm);">
+                    <div>
+                        <div class="fw-bold"><i class="fa-solid fa-calculator me-2"></i>Run New Loan Risk Assessment</div>
+                        <small class="text-muted">Enter income, credit, and loan specs into the 3-step wizard.</small>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+                <a href="{% url 'predictor:model_comparison' %}" class="btn btn-outline-secondary p-3 text-start d-flex align-items-center justify-content-between" style="border-radius: var(--radius-sm);">
+                    <div>
+                        <div class="fw-bold"><i class="fa-solid fa-chart-line me-2"></i>View ML & DL Performance Dashboard</div>
+                        <small class="text-muted">Compare F1, ROC-AUC, and Cross-Validation scores.</small>
+                    </div>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Assessments Table -->
+<div class="saas-card">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="fw-bold text-slate-900 mb-0"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Recent Assessments</h5>
+        <a href="{% url 'predictor:history' %}" class="text-primary text-decoration-none small fw-semibold">View All History →</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="saas-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Applicant Income</th>
+                    <th>Loan Amount</th>
+                    <th>Credit History</th>
+                    <th>Prediction</th>
+                    <th>Risk Category</th>
+                    <th>Probability</th>
+                    <th>Model Used</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_assessments %}
+                <tr>
+                    <td class="fw-semibold">#{{ item.id }}</td>
+                    <td>${{ item.applicant_income|floatformat:0 }}</td>
+                    <td>${{ item.loan_amount|floatformat:0 }}k</td>
+                    <td>
+                        {% if item.credit_history == 1 %}
+                            <span class="badge bg-success bg-opacity-10 text-success">Good (1.0)</span>
+                        {% else %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger">Poor (0.0)</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.prediction == 'Approved' %}
+                            <span class="fw-bold text-success"><i class="fa-solid fa-check me-1"></i>Approved</span>
+                        {% else %}
+                            <span class="fw-bold text-danger"><i class="fa-solid fa-xmark me-1"></i>Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.risk_level == 'LOW' %}
+                            <span class="badge-low-risk">LOW</span>
+                        {% elif item.risk_level == 'MEDIUM' %}
+                            <span class="badge-med-risk">MEDIUM</span>
+                        {% else %}
+                            <span class="badge-high-risk">HIGH</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold">{{ item.approval_probability|default:item.probability }}%</td>
+                    <td class="text-muted small">{{ item.model_name }}</td>
+                    <td>
+                        <a href="{% url 'predictor:result' item.id %}" class="btn btn-sm btn-outline-primary" style="border-radius: var(--radius-sm);">
+                            View Report
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">No loan risk assessments logged yet. Run your first prediction!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const distData = {{ chart_risk_dist_json|safe }};
+        if (distData && distData.labels) {
+            const ctx = document.getElementById('riskDistChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: distData.labels,
+                    datasets: [{
+                        data: distData.data,
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

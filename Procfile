@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn loan_prediction.wsgi --log-file -

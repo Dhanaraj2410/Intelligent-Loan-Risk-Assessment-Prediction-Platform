@@ -6,15 +6,15 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables
-load_dotenv()
+load_dotenv(BASE_DIR / '.env')
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-your-secret-key-here')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-loan-risk-assessment-default-key-12345')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,*').split(',')]
 
 # Application definition
 INSTALLED_APPS = [
@@ -57,21 +57,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'loan_prediction.wsgi.application'
 
-# Database - MySQL
-# loan_prediction/settings.py
-
-import os
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# MySQL Database Configuration
+# Database Configuration (MySQL Connection)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'loan_prediction',  # Your database name
-        'USER': 'root',      # loan_prediction'Your MySQL username
-        'PASSWORD': 'Dhanaraj2410',      # Your MySQL password (leave empty if no password)
+        'NAME': 'loan_prediction',
+        'USER': 'root',
+        'PASSWORD': 'Dhanaraj2410',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
@@ -107,9 +99,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ML Models directory
-ML_MODELS_DIR = BASE_DIR / 'ml_models'
-
 # Session settings
 SESSION_COOKIE_AGE = 3600
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = True

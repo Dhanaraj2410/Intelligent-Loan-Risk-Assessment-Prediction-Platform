@@ -1,0 +1,140 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block title %}Model Comparison Dashboard — ML vs DL{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-lg-12">
+        <div class="glass-card">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-white mb-1"><i class="fa-solid fa-chart-line text-primary me-2"></i>Machine Learning vs Deep Learning Dashboard</h2>
+                    <p class="text-muted mb-0">Empirical evaluation metrics comparing 7 Machine Learning classifiers against the Deep Neural Network (ANN).</p>
+                </div>
+                <span class="badge bg-indigo-500 bg-opacity-20 text-indigo-400 border border-indigo-500 border-opacity-30 px-3 py-2" style="color: #a5b4fc;">
+                    <i class="fa-solid fa-microchip me-1"></i> Empirical Model Selection
+                </span>
+            </div>
+
+            <!-- Best Model Metric Highlights -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3);">
+                        <div class="small text-muted">Best Machine Learning Model</div>
+                        <div class="fs-4 fw-bold text-white mb-1">{{ best_ml.Model|default:"XGBoost" }}</div>
+                        <small style="color: #818cf8;">F1: {{ best_ml.F1 }} | ROC-AUC: {{ best_ml.ROC_AUC }}</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <div class="small text-muted">Deep Learning Architecture</div>
+                        <div class="fs-4 fw-bold text-white mb-1">{{ best_dl.Model|default:"ANN (Deep Learning)" }}</div>
+                        <small style="color: #c084fc;">F1: {{ best_dl.F1 }} | ROC-AUC: {{ best_dl.ROC_AUC }}</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <div class="small text-muted">Overall Champion Model</div>
+                        <div class="fs-4 fw-bold text-success mb-1" style="color: #34d399 !important;">{{ overall_best.Model }}</div>
+                        <small class="text-success">F1: {{ overall_best.F1 }} | ROC-AUC: {{ overall_best.ROC_AUC }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="table-responsive mb-4">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Model Classifier</th>
+                            <th>Accuracy</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>ROC-AUC</th>
+                            <th>CV F1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in models_data %}
+                        <tr>
+                            <td class="fw-bold text-white">
+                                {{ row.Model }}
+                                {% if row.Model == overall_best.Model %}
+                                    <span class="badge bg-success ms-2">Best Model</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ row.Accuracy }}</td>
+                            <td>{{ row.Precision }}</td>
+                            <td>{{ row.Recall }}</td>
+                            <td class="fw-bold text-indigo-400" style="color: #818cf8;">{{ row.F1 }}</td>
+                            <td class="fw-bold text-cyan-400" style="color: #22d3ee;">{{ row.ROC_AUC }}</td>
+                            <td>{{ row.CV_F1 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No model evaluation report data found. Please run training scripts.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chart.js Visualization Container -->
+            <h5 class="text-white mb-3"><i class="fa-solid fa-chart-bar text-cyan-400 me-2"></i>Performance Metric Visualization (F1 vs ROC-AUC)</h5>
+            <div style="position: relative; height: 350px;">
+                <canvas id="modelComparisonChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const rawData = {{ json_data|safe }};
+        if (!rawData || rawData.length === 0) return;
+
+        const labels = rawData.map(d => d.Model);
+        const f1Scores = rawData.map(d => d.F1);
+        const aucScores = rawData.map(d => d.ROC_AUC);
+
+        const ctx = document.getElementById('modelComparisonChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'F1-Score',
+                        data: f1Scores,
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderColor: '#6366f1',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'ROC-AUC',
+                        data: aucScores,
+                        backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                        borderColor: '#06b6d4',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#f8fafc' } }
+                },
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 0.5, max: 1.0 }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

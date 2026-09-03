@@ -1,238 +1,247 @@
 {% extends 'predictor/base.html' %}
 {% load static %}
 
+{% block title %}Loan Assessment Result — LoanIQ Platform{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <!-- Result Card -->
-        <div class="card shadow {% if prediction == 'Approved' %}border-success{% else %}border-danger{% endif %}">
-            <div class="card-header {% if prediction == 'Approved' %}bg-success{% else %}bg-danger{% endif %} text-white text-center">
-                <h3 class="mb-0">
-                    <i class="fas fa-{% if prediction == 'Approved' %}check-circle{% else %}times-circle{% endif %} me-2"></i>
-                    Loan {{ prediction }}
-                </h3>
+    <div class="col-lg-10">
+        
+        <!-- SECTION A: FINAL DECISION BANNER -->
+        <div class="saas-card p-4 p-md-5 text-center shadow-md mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+                <span class="text-muted small fw-bold text-uppercase">LOAN ASSESSMENT RESULT #{{ record.id }}</span>
+                {% if record.risk_level == 'LOW' %}
+                    <span class="badge-low-risk"><i class="fa-solid fa-shield-check me-1"></i> LOW RISK</span>
+                {% elif record.risk_level == 'MEDIUM' %}
+                    <span class="badge-med-risk"><i class="fa-solid fa-triangle-exclamation me-1"></i> MEDIUM RISK</span>
+                {% else %}
+                    <span class="badge-high-risk"><i class="fa-solid fa-circle-exclamation me-1"></i> HIGH RISK</span>
+                {% endif %}
             </div>
-            <div class="card-body text-center py-5">
-                <!-- Probability Circle -->
-                <div class="position-relative d-inline-block">
-                    <div class="progress-circle" style="width: 150px; height: 150px;">
-                        <svg viewBox="0 0 36 36" class="circular-chart">
-                            <path class="circle-bg" d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path class="circle" stroke-dasharray="{{ probability }}, 100"
-                                d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        </svg>
-                        <div class="percentage">
-                            <span class="display-4 fw-bold">{{ probability|floatformat:1 }}%</span>
+
+            <div class="my-4">
+                {% if record.prediction == 'Approved' %}
+                    <div class="p-4 rounded-3 mb-3" style="background: #ecfdf5; border: 1px solid #a7f3d0;">
+                        <h1 class="display-5 fw-extrabold mb-1" style="color: #065f46; font-weight: 800;">
+                            <i class="fa-solid fa-circle-check me-2 text-success"></i> APPROVAL LIKELY
+                        </h1>
+                        <p class="lead mb-0 text-slate-700" style="color: #047857;">Applicant profile meets financial thresholds and model confidence criteria.</p>
+                    </div>
+                {% else %}
+                    <div class="p-4 rounded-3 mb-3" style="background: #fef2f2; border: 1px solid #fecaca;">
+                        <h1 class="display-5 fw-extrabold mb-1" style="color: #991b1b; font-weight: 800;">
+                            <i class="fa-solid fa-circle-xmark me-2 text-danger"></i> REJECTION LIKELY
+                        </h1>
+                        <p class="lead mb-0 text-slate-700" style="color: #b91c1c;">Risk scores exceed recommended thresholds. Repayment burden or credit history require manual underwriting review.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Risk Gauge & Probability Grid -->
+            <div class="row g-4 my-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="gauge-container">
+                        <canvas id="gaugeCanvas" width="200" height="200"></canvas>
+                        <div class="gauge-val">{{ record.approval_probability|default:record.probability }}%</div>
+                    </div>
+                    <div class="text-muted small fw-bold mt-2">Approval Probability</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="text-muted small fw-bold text-uppercase">Risk Score</div>
+                        <div class="display-6 fw-bold text-slate-900 my-1">{{ record.risk_score }} <span class="fs-6 text-muted">/ 100</span></div>
+                        <div class="meter-bar-container mt-2">
+                            <div class="meter-bar-fill {% if record.risk_level == 'HIGH' %}bg-danger{% elif record.risk_level == 'MEDIUM' %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ record.risk_score }}%;"></div>
                         </div>
                     </div>
                 </div>
-                <p class="text-muted mt-3">Confidence Level</p>
-            </div>
-        </div>
 
-        <!-- Details Card -->
-        <div class="card mt-4">
-            <div class="card-header bg-light">
-                <h5 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>Application Details
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Gender</label>
-                            <p class="fw-bold">{{ data.gender }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Married</label>
-                            <p class="fw-bold">{{ data.married }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Dependents</label>
-                            <p class="fw-bold">{{ data.dependents }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Education</label>
-                            <p class="fw-bold">{{ data.education }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Self Employed</label>
-                            <p class="fw-bold">{{ data.self_employed }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Property Area</label>
-                            <p class="fw-bold">{{ data.property_area }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Applicant Income</label>
-                            <p class="fw-bold">${{ data.applicant_income|floatformat:0 }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Coapplicant Income</label>
-                            <p class="fw-bold">${{ data.coapplicant_income|floatformat:0 }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Loan Amount</label>
-                            <p class="fw-bold">${{ data.loan_amount|floatformat:0 }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="detail-item">
-                            <label class="text-muted small">Loan Term</label>
-                            <p class="fw-bold">{{ data.loan_amount_term|floatformat:0 }} months</p>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="detail-item">
-                            <label class="text-muted small">Credit History</label>
-                            <p class="fw-bold">
-                                <span class="badge {% if data.credit_history == 1 %}bg-success{% else %}bg-danger{% endif %}">
-                                    {% if data.credit_history == 1 %}Good{% else %}Bad{% endif %}
-                                </span>
-                            </p>
-                        </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="text-muted small fw-bold text-uppercase">Primary Model Engine</div>
+                        <div class="fs-4 fw-bold text-primary my-1">{{ record.model_name }}</div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary">Score: {{ record.approval_probability|default:record.probability }}%</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Feedback Section -->
-        <div class="card mt-4">
-            <div class="card-header bg-light">
-                <h5 class="mb-0">
-                    <i class="fas fa-comment me-2"></i>Was this prediction accurate?
-                </h5>
-            </div>
-            <div class="card-body text-center">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-success" onclick="submitFeedback({{ prediction_id }}, true)">
-                        <i class="fas fa-thumbs-up me-1"></i>Yes, Correct
-                    </button>
-                    <button type="button" class="btn btn-danger" onclick="submitFeedback({{ prediction_id }}, false)">
-                        <i class="fas fa-thumbs-down me-1"></i>No, Incorrect
-                    </button>
+        <!-- SECTION B: FINANCIAL REPAYMENT & HEALTH ANALYSIS -->
+        <div class="saas-card p-4 p-md-5 mb-4 shadow-sm border border-primary border-opacity-30">
+            <h3 class="fw-bold text-slate-900 mb-2">
+                <i class="fa-solid fa-calculator text-primary me-2"></i>Financial Repayment & Health Analysis
+            </h3>
+            <p class="text-muted mb-4">Independent financial layer computing monthly income, annual income (12 months), and bank EMI over {{ explanation_details.applicant_info.loan_term_months }} Months ({{ explanation_details.applicant_info.loan_term_years }} Years).</p>
+
+            <div class="row g-4 mb-3">
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <div class="text-muted small fw-bold text-uppercase">Monthly Income</div>
+                        <div class="fs-5 fw-extrabold text-success my-1">₹{{ explanation_details.financial_calcs.total_income_monthly|floatformat:0 }}</div>
+                        <small class="text-muted">₹{{ explanation_details.applicant_info.applicant_income|floatformat:0 }} + ₹{{ explanation_details.applicant_info.coapplicant_income|floatformat:0 }}</small>
+                    </div>
                 </div>
-                <div id="feedbackMessage" class="mt-2"></div>
+
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <div class="text-muted small fw-bold text-uppercase">Annual Income (12m)</div>
+                        <div class="fs-5 fw-extrabold text-slate-900 my-1">₹{{ explanation_details.financial_calcs.annual_total_income|floatformat:0 }}</div>
+                        <small class="text-muted">Monthly × 12 months</small>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <div class="text-muted small fw-bold text-uppercase">Loan Requested</div>
+                        <div class="fs-5 fw-extrabold text-primary my-1">₹{{ explanation_details.applicant_info.loan_amount_inr|floatformat:0 }}</div>
+                        <small class="text-muted">{{ explanation_details.applicant_info.loan_amount_lakhs }} Lakhs | {{ explanation_details.applicant_info.loan_term_months }}m</small>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <div class="text-muted small fw-bold text-uppercase">Estimated Bank EMI</div>
+                        <div class="fs-5 fw-extrabold text-warning my-1">₹{{ explanation_details.financial_calcs.monthly_emi|floatformat:0 }} / mo</div>
+                        <small class="text-muted">Interest Rate: {{ explanation_details.financial_calcs.annual_interest_rate }}% p.a.</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Status Indicator Badge -->
+            <div class="p-3 rounded-3 text-center border {% if explanation_details.financial_calcs.burden_class == 'danger' %}bg-danger bg-opacity-10 border-danger{% elif explanation_details.financial_calcs.burden_class == 'warning' %}bg-warning bg-opacity-10 border-warning{% else %}bg-success bg-opacity-10 border-success{% endif %}">
+                <span class="fw-bold fs-6 text-{{ explanation_details.financial_calcs.burden_class }}">
+                    EMI-to-Income Burden Ratio: {{ explanation_details.financial_calcs.emi_to_income_pct }}% — {{ explanation_details.financial_calcs.burden_badge }}
+                </span>
             </div>
         </div>
 
-        <div class="d-grid gap-2 mt-4">
-            <a href="{% url 'predictor:predict' %}" class="btn btn-outline-primary">
-                <i class="fas fa-arrow-left me-2"></i>Make Another Prediction
+        <!-- SECTION C: MODEL COMPARISON RESULTS GRID -->
+        <div class="saas-card p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                <h5 class="fw-bold text-slate-900 mb-0"><i class="fa-solid fa-layer-group text-primary me-2"></i>AI MODELS EVALUATION & COMPARISON GRID</h5>
+                <span class="badge bg-secondary">8 Algorithms Evaluated</span>
+            </div>
+            <div class="row g-3">
+                {% for m_name, m_data in model_predictions.items %}
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border">
+                        <div class="fw-bold text-slate-800">
+                            {% if m_data.prediction == 'Approved' %}
+                                <i class="fa-solid fa-circle-check text-success me-2"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-xmark text-danger me-2"></i>
+                            {% endif %}
+                            {{ m_name }}
+                            {% if m_name == record.model_name %}
+                                <span class="badge bg-primary ms-1" style="font-size: 0.7rem;">🏆 Selected Engine</span>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small fw-semibold">{{ m_data.probability }}%</span>
+                            {% if m_data.prediction == 'Approved' %}
+                                <span class="badge bg-success bg-opacity-20 text-success">Approved</span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-20 text-danger">Rejected</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- SECTION D: DECISION INSIGHTS & EXPLANATIONS -->
+        <div class="saas-card p-4 mb-4">
+            <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-lightbulb text-warning me-2"></i>Key Application Factors & Decision Drivers</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 border">
+                        {% if explanation_details.applicant_info.credit_history == 1.0 %}
+                            <div class="fw-bold text-success mb-1"><i class="fa-solid fa-check-circle me-1"></i> Positive Credit Record (CIBIL 750+)</div>
+                            <small class="text-muted">Applicant has a verified history of timely credit repayments.</small>
+                        {% else %}
+                            <div class="fw-bold text-danger mb-1"><i class="fa-solid fa-exclamation-triangle me-1"></i> Poor Credit Record</div>
+                            <small class="text-muted">Past defaults or low credit history severely impacting risk score.</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 border">
+                        {% if explanation_details.financial_calcs.is_high_emi_burden %}
+                            <div class="fw-bold text-danger mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> High Repayment Burden ({{ explanation_details.financial_calcs.emi_to_income_pct }}%)</div>
+                            <small class="text-muted">Monthly EMI takes > 40% of household income, requiring attention.</small>
+                        {% else %}
+                            <div class="fw-bold text-success mb-1"><i class="fa-solid fa-check-circle me-1"></i> Manageable EMI Burden ({{ explanation_details.financial_calcs.emi_to_income_pct }}%)</div>
+                            <small class="text-muted">Monthly EMI remains within standard banking safety threshold (&le; 40%).</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION E: EXPANDABLE CALCULATION DETAILS BUTTON -->
+        <div class="saas-card p-4 mb-4 text-center">
+            <button class="btn btn-outline-primary py-3 px-4 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#calculationDetailsCollapse" aria-expanded="false" aria-controls="calculationDetailsCollapse">
+                <i class="fa-solid fa-calculator me-2"></i> 🧮 View Complete Step-by-Step Calculation Breakdown
+            </button>
+
+            <div class="collapse mt-4 text-start" id="calculationDetailsCollapse">
+                <div class="p-4 bg-light rounded-3 border">
+                    <h5 class="fw-bold text-slate-900 mb-3 border-bottom pb-2">Step-by-Step Calculation Log</h5>
+                    <ol class="lh-lg mb-0 text-slate-700">
+                        <li><strong>Household Monthly Income:</strong> ₹{{ explanation_details.applicant_info.applicant_income|floatformat:0 }} + ₹{{ explanation_details.applicant_info.coapplicant_income|floatformat:0 }} = <strong>₹{{ explanation_details.financial_calcs.total_income_monthly|floatformat:0 }} / month</strong></li>
+                        <li><strong>Annual Total Income (12 months):</strong> ₹{{ explanation_details.financial_calcs.total_income_monthly|floatformat:0 }} × 12 = <strong>₹{{ explanation_details.financial_calcs.annual_total_income|floatformat:0 }} / year</strong></li>
+                        <li><strong>Loan-to-Annual Income Ratio:</strong> ₹{{ explanation_details.applicant_info.loan_amount_inr|floatformat:0 }} ÷ ₹{{ explanation_details.financial_calcs.annual_total_income|floatformat:0 }} = <strong>{{ explanation_details.financial_calcs.loan_to_income_ratio }}x</strong></li>
+                        <li><strong>Monthly Principal Repayment (before interest):</strong> ₹{{ explanation_details.applicant_info.loan_amount_inr|floatformat:0 }} ÷ {{ explanation_details.applicant_info.loan_term_months }} months = <strong>₹{{ explanation_details.financial_calcs.principal_monthly|floatformat:0 }} / month</strong></li>
+                        <li><strong>Standard Bank EMI (at {{ explanation_details.financial_calcs.annual_interest_rate }}% p.a.):</strong> <strong>₹{{ explanation_details.financial_calcs.monthly_emi|floatformat:0 }} / month</strong></li>
+                        <li><strong>EMI-to-Income Burden Ratio:</strong> (₹{{ explanation_details.financial_calcs.monthly_emi|floatformat:0 }} ÷ ₹{{ explanation_details.financial_calcs.total_income_monthly|floatformat:0 }}) × 100 = <strong>{{ explanation_details.financial_calcs.emi_to_income_pct }}%</strong></li>
+                        <li><strong>Primary Model Score:</strong> Evaluated using {{ record.model_name }} $\to$ <strong>{{ record.approval_probability|default:record.probability }}% Approval Likelihood</strong></li>
+                        <li><strong>Risk Score Formula:</strong> 100 - Approval Probability = <strong>{{ record.risk_score }} / 100</strong></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 mb-5">
+            <a href="{% url 'predictor:predict' %}" class="btn-blue py-3 px-4">
+                <i class="fa-solid fa-rotate-right"></i> Run Another Assessment
+            </a>
+            <a href="{% url 'predictor:history' %}" class="btn btn-outline-secondary py-3 px-4" style="border-radius: var(--radius-sm);">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i> View All History Log
             </a>
         </div>
     </div>
 </div>
-
-<style>
-.circular-chart {
-    display: block;
-    margin: 0 auto;
-    max-width: 100%;
-    max-height: 250px;
-}
-.circle-bg {
-    fill: none;
-    stroke: #eee;
-    stroke-width: 3.8;
-}
-.circle {
-    fill: none;
-    stroke-width: 3.8;
-    stroke-linecap: round;
-    animation: progress 1s ease-out forwards;
-}
-.circle {
-    stroke: {% if prediction == 'Approved' %}#28a745{% else %}#dc3545{% endif %};
-}
-@keyframes progress {
-    0% { stroke-dasharray: 0, 100; }
-}
-.percentage {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    text-align: center;
-}
-.detail-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
-.detail-item:last-child {
-    border-bottom: none;
-}
-</style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function submitFeedback(predictionId, isCorrect) {
-    const messageDiv = document.getElementById('feedbackMessage');
-    messageDiv.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Submitting...';
-    
-    fetch('{% url "predictor:feedback" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-            prediction_id: predictionId,
-            is_correct: isCorrect,
-            comment: ''
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            messageDiv.innerHTML = `
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle me-2"></i>${data.message}
-                </div>
-            `;
-            // Disable buttons
-            document.querySelectorAll('.btn-group button').forEach(btn => {
-                btn.disabled = true;
-                btn.classList.add('opacity-50');
-            });
-        } else {
-            messageDiv.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle me-2"></i>${data.error || 'Error submitting feedback'}
-                </div>
-            `;
+    document.addEventListener("DOMContentLoaded", function() {
+        const prob = {{ record.approval_probability|default:record.probability|default:50 }};
+        const canvas = document.getElementById("gaugeCanvas");
+        if (canvas) {
+            const ctx = canvas.getContext("2d");
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 70;
+
+            // Draw Background Arc
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0.75 * Math.PI, 2.25 * Math.PI);
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.stroke();
+
+            // Draw Fill Arc
+            const angle = 0.75 * Math.PI + (prob / 100) * 1.5 * Math.PI;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0.75 * Math.PI, angle);
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = prob >= 75 ? "#10b981" : (prob >= 45 ? "#f59e0b" : "#ef4444");
+            ctx.stroke();
         }
-    })
-    .catch(error => {
-        messageDiv.innerHTML = `
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>Network error. Please try again.
-            </div>
-        `;
     });
-}
 </script>
 {% endblock %}

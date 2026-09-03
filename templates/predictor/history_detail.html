@@ -1,0 +1,95 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block title %}Historical Record #{{ record.id }} — LoanIQ{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="saas-card p-4 p-md-5 mb-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                <div>
+                    <span class="text-muted small fw-bold text-uppercase">ASSESSMENT LOG RECORD #{{ record.id }}</span>
+                    <h2 class="fw-bold text-slate-900 mb-0 mt-1">Loan Risk Assessment Detail</h2>
+                    <small class="text-muted"><i class="fa-solid fa-calendar me-1"></i> Recorded on {{ record.created_at|date:"F d, Y - H:i" }}</small>
+                </div>
+                <div>
+                    {% if record.risk_level == 'LOW' %}
+                        <span class="badge-low-risk"><i class="fa-solid fa-shield-check me-1"></i> LOW RISK</span>
+                    {% elif record.risk_level == 'MEDIUM' %}
+                        <span class="badge-med-risk"><i class="fa-solid fa-triangle-exclamation me-1"></i> MEDIUM RISK</span>
+                    {% else %}
+                        <span class="badge-high-risk"><i class="fa-solid fa-circle-exclamation me-1"></i> HIGH RISK</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Decision Outcome Banner -->
+            <div class="p-4 rounded-3 text-center mb-4 {% if record.prediction == 'Approved' %}bg-success bg-opacity-10 border border-success border-opacity-30{% else %}bg-danger bg-opacity-10 border border-danger border-opacity-30{% endif %}">
+                <h3 class="fw-bold mb-1 {% if record.prediction == 'Approved' %}text-success{% else %}text-danger{% endif %}">
+                    {% if record.prediction == 'Approved' %}<i class="fa-solid fa-circle-check me-2"></i> APPROVAL LIKELY{% else %}<i class="fa-solid fa-circle-xmark me-2"></i> REJECTION LIKELY{% endif %}
+                </h3>
+                <div class="text-slate-700">Approval Likelihood: <strong>{{ record.approval_probability|default:record.probability }}%</strong> | Risk Score: <strong>{{ record.risk_score }} / 100</strong></div>
+            </div>
+
+            <!-- Financial Profile & Loan Term -->
+            <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-wallet text-success me-2"></i>Financial Profile & Repayment Analysis</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <small class="text-muted uppercase fw-bold">Monthly Income</small>
+                        <div class="fs-5 fw-bold text-success mt-1">₹{{ explanation_details.financial_calcs.total_income_monthly|floatformat:0 }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <small class="text-muted uppercase fw-bold">Annual Income (12m)</small>
+                        <div class="fs-5 fw-bold text-slate-900 mt-1">₹{{ explanation_details.financial_calcs.annual_total_income|floatformat:0 }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <small class="text-muted uppercase fw-bold">Loan Requested</small>
+                        <div class="fs-5 fw-bold text-primary mt-1">₹{{ explanation_details.applicant_info.loan_amount_inr|floatformat:0 }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <small class="text-muted uppercase fw-bold">Estimated Bank EMI</small>
+                        <div class="fs-5 fw-bold text-warning mt-1">₹{{ explanation_details.financial_calcs.monthly_emi|floatformat:0 }} / mo</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Model Consensus -->
+            <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-layer-group text-primary me-2"></i>AI Models Evaluated</h5>
+            <div class="row g-3 mb-4">
+                {% for m_name, m_data in model_predictions.items %}
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border">
+                        <div class="fw-semibold text-slate-800">{{ m_name }}</div>
+                        <div>
+                            <span class="text-muted small me-2">{{ m_data.probability }}%</span>
+                            {% if m_data.prediction == 'Approved' %}
+                                <span class="badge bg-success bg-opacity-20 text-success">Approved</span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-20 text-danger">Rejected</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex justify-content-between pt-3 border-top">
+                <a href="{% url 'predictor:history' %}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to History Table
+                </a>
+                <a href="{% url 'predictor:predict' %}" class="btn-blue">
+                    <i class="fa-solid fa-plus me-1"></i> New Assessment
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

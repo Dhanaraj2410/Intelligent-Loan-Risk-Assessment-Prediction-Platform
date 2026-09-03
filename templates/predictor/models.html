@@ -1,0 +1,135 @@
+{% extends 'predictor/base.html' %}
+{% load static %}
+
+{% block title %}ML & DL Model Performance — LoanIQ{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-extrabold text-slate-900 mb-1" style="font-weight: 800;"><i class="fa-solid fa-microchip text-primary me-2"></i>ML & DL Model Performance Dashboard</h2>
+        <p class="text-muted mb-0">Empirical evaluation metrics comparing 7 Machine Learning classifiers against the Artificial Neural Network (ANN).</p>
+    </div>
+    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 px-3 py-2">
+        <i class="fa-solid fa-chart-line me-1"></i> Empirical Model Selection
+    </span>
+</div>
+
+<!-- Highlight Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="saas-card h-100 border-primary border-opacity-50">
+            <div class="text-muted small fw-semibold text-uppercase">Best Machine Learning Model</div>
+            <div class="fs-3 fw-bold text-primary my-1">{{ best_ml.Model|default:"XGBoost (Tuned)" }}</div>
+            <div class="small text-slate-600">F1: <strong class="text-primary">{{ best_ml.F1 }}</strong> | ROC-AUC: <strong class="text-primary">{{ best_ml.ROC_AUC }}</strong></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="saas-card h-100 border-purple">
+            <div class="text-muted small fw-semibold text-uppercase">Deep Learning Architecture</div>
+            <div class="fs-3 fw-bold text-purple my-1" style="color: #8b5cf6;">{{ best_dl.Model|default:"ANN (Deep Learning)" }}</div>
+            <div class="small text-slate-600">F1: <strong>{{ best_dl.F1 }}</strong> | ROC-AUC: <strong>{{ best_dl.ROC_AUC }}</strong></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="saas-card h-100 border-success border-opacity-50">
+            <div class="text-muted small fw-semibold text-uppercase">Overall Champion Model</div>
+            <div class="fs-3 fw-bold text-success my-1">{{ overall_best.Model }}</div>
+            <div class="small text-slate-600">F1: <strong class="text-success">{{ overall_best.F1 }}</strong> | ROC-AUC: <strong class="text-success">{{ overall_best.ROC_AUC }}</strong></div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparison Table -->
+<div class="saas-card mb-4">
+    <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-table me-2"></i>Empirical Metric Comparison Matrix</h5>
+    <div class="table-responsive">
+        <table class="saas-table">
+            <thead>
+                <tr>
+                    <th>Model Classifier</th>
+                    <th>Accuracy</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>F1-Score</th>
+                    <th>ROC-AUC</th>
+                    <th>CV F1 Mean</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in models_data %}
+                <tr>
+                    <td class="fw-bold text-slate-900">
+                        {{ row.Model }}
+                        {% if row.Model == overall_best.Model %}
+                            <span class="badge bg-success ms-2">Best Overall</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ row.Accuracy }}</td>
+                    <td>{{ row.Precision }}</td>
+                    <td>{{ row.Recall }}</td>
+                    <td class="fw-bold text-primary">{{ row.F1 }}</td>
+                    <td class="fw-bold text-info">{{ row.ROC_AUC }}</td>
+                    <td>{{ row.CV_F1 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No model evaluation report data found. Please run model training scripts.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Chart Visualization Container -->
+<div class="saas-card">
+    <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-chart-bar text-primary me-2"></i>Model Performance Visualization (F1 vs ROC-AUC)</h5>
+    <div style="position: relative; height: 350px;">
+        <canvas id="modelChart"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const rawData = {{ json_data|safe }};
+        if (!rawData || rawData.length === 0) return;
+
+        const labels = rawData.map(d => d.Model);
+        const f1Scores = rawData.map(d => d.F1);
+        const aucScores = rawData.map(d => d.ROC_AUC);
+
+        const ctx = document.getElementById('modelChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'F1-Score',
+                        data: f1Scores,
+                        backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                        borderColor: '#2563eb',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'ROC-AUC',
+                        data: aucScores,
+                        backgroundColor: 'rgba(6, 182, 212, 0.8)',
+                        borderColor: '#06b6d4',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { min: 0.5, max: 1.0 }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

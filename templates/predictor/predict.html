@@ -1,252 +1,198 @@
 {% extends 'predictor/base.html' %}
 {% load static %}
 
+{% block title %}Assess Loan — LoanIQ Platform{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">
-                    <i class="fas fa-calculator me-2"></i>Loan Prediction Form
-                </h4>
-            </div>
-            <div class="card-body">
-                <form method="post" id="predictionForm" novalidate>
-                    {% csrf_token %}
-                    
-                    <div class="row g-3">
-                        <!-- Personal Information -->
-                        <div class="col-12">
-                            <h5 class="border-bottom pb-2 text-primary">
-                                <i class="fas fa-user me-2"></i>Personal Information
-                            </h5>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_gender" class="form-label fw-bold">Gender</label>
-                                {{ form.gender }}
-                                {% if form.gender.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.gender.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_married" class="form-label fw-bold">Married</label>
-                                {{ form.married }}
-                                {% if form.married.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.married.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_dependents" class="form-label fw-bold">Dependents</label>
-                                {{ form.dependents }}
-                                {% if form.dependents.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.dependents.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_education" class="form-label fw-bold">Education</label>
-                                {{ form.education }}
-                                {% if form.education.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.education.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_self_employed" class="form-label fw-bold">Self Employed</label>
-                                {{ form.self_employed }}
-                                {% if form.self_employed.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.self_employed.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-12">
-                            <h5 class="border-bottom pb-2 text-primary mt-3">
-                                <i class="fas fa-coins me-2"></i>Financial Information
-                            </h5>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_applicant_income" class="form-label fw-bold">
-                                    <i class="fas fa-dollar-sign text-success"></i> Applicant Income
-                                </label>
-                                {{ form.applicant_income }}
-                                {% if form.applicant_income.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.applicant_income.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_coapplicant_income" class="form-label fw-bold">
-                                    <i class="fas fa-dollar-sign text-info"></i> Coapplicant Income
-                                </label>
-                                {{ form.coapplicant_income }}
-                                {% if form.coapplicant_income.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.coapplicant_income.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_loan_amount" class="form-label fw-bold">
-                                    <i class="fas fa-hand-holding-usd text-warning"></i> Loan Amount
-                                </label>
-                                {{ form.loan_amount }}
-                                {% if form.loan_amount.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.loan_amount.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_loan_amount_term" class="form-label fw-bold">
-                                    <i class="fas fa-clock text-secondary"></i> Loan Term (Months)
-                                </label>
-                                {{ form.loan_amount_term }}
-                                {% if form.loan_amount_term.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.loan_amount_term.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_credit_history" class="form-label fw-bold">
-                                    <i class="fas fa-credit-card text-danger"></i> Credit History (0 or 1)
-                                </label>
-                                {{ form.credit_history }}
-                                <div class="form-text">
-                                    <span class="badge bg-success">1</span> Good credit score
-                                    <span class="badge bg-danger ms-2">0</span> Bad credit score
-                                </div>
-                                {% if form.credit_history.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {{ form.credit_history.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="id_property_area" class="form-label fw-bold">
-                                    <i class="fas fa-map-marker-alt text
-                                                                    <i class="fas fa-map-marker-alt text-primary"></i> Property Area
-                            </label>
-                            {{ form.property_area }}
-                            {% if form.property_area.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.property_area.errors }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg" id="predictBtn">
-                            <i class="fas fa-rocket me-2"></i>Predict Loan Status
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <div class="card mt-4 bg-light">
-            <div class="card-body">
-                <h6 class="card-title">
-                    <i class="fas fa-info-circle text-info me-2"></i>About this prediction
-                </h6>
-                <p class="card-text text-muted small">
-                    This prediction is based on a Logistic Regression model trained on historical loan data 
-                    with <strong>94% accuracy</strong>. The model considers multiple factors including 
-                    income, credit history, and demographic information.
-                </p>
-                <div class="row">
-                    <div class="col-6">
-                        <span class="badge bg-success">Approved</span>
-                        <span class="badge bg-danger">Rejected</span>
-                    </div>
-                    <div class="col-6 text-end">
-                        <span class="badge bg-info">⚡ Instant Results</span>
-                    </div>
+    <div class="col-lg-9">
+        <div class="saas-card shadow-sm p-4 p-md-5">
+            <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+                <div>
+                    <h2 class="fw-bold text-slate-900 mb-1"><i class="fa-solid fa-file-signature text-primary me-2"></i>New Loan Risk Assessment</h2>
+                    <p class="text-muted mb-0">Fill out applicant details in Indian Rupees (₹) to calculate loan approval likelihood & financial indicators.</p>
                 </div>
             </div>
+
+            <!-- Step Wizard Indicator -->
+            <div class="wizard-steps px-4">
+                <div class="step-node active" id="node1">1</div>
+                <div class="step-node" id="node2">2</div>
+                <div class="step-node" id="node3">3</div>
+            </div>
+
+            <form method="POST" action="{% url 'predictor:predict' %}" id="loanForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-4">
+                        {% for error in form.non_field_errors %}
+                            <div><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- STEP 1: Applicant Information -->
+                <div id="step1">
+                    <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-user-tag text-primary me-2"></i>Step 1: Applicant Information & Model Choice</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.gender.id_for_label }}" class="form-label fw-semibold text-slate-700">Gender</label>
+                            {{ form.gender }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.married.id_for_label }}" class="form-label fw-semibold text-slate-700">Marital Status</label>
+                            {{ form.married }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.dependents.id_for_label }}" class="form-label fw-semibold text-slate-700">Dependents</label>
+                            {{ form.dependents }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.education.id_for_label }}" class="form-label fw-semibold text-slate-700">Education Level</label>
+                            {{ form.education }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.self_employed.id_for_label }}" class="form-label fw-semibold text-slate-700">Self Employed</label>
+                            {{ form.self_employed }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.model_engine.id_for_label }}" class="form-label fw-semibold text-primary">AI Model Engine</label>
+                            {{ form.model_engine }}
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn-blue" id="btnNext1">Next: Financial Details <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Financial Information & Live EMI Preview -->
+                <div id="step2" style="display: none;">
+                    <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-wallet text-success me-2"></i>Step 2: Financial Profile & Loan Terms (in ₹)</h5>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.applicant_income.id_for_label }}" class="form-label fw-semibold text-slate-700">Applicant Monthly Income (₹)</label>
+                            {{ form.applicant_income }}
+                            {% if form.applicant_income.errors %}<small class="text-danger">{{ form.applicant_income.errors.0 }}</small>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.coapplicant_income.id_for_label }}" class="form-label fw-semibold text-slate-700">Co-applicant Monthly Income (₹)</label>
+                            {{ form.coapplicant_income }}
+                            {% if form.coapplicant_income.errors %}<small class="text-danger">{{ form.coapplicant_income.errors.0 }}</small>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label for="{{ form.loan_amount.id_for_label }}" class="form-label fw-semibold text-slate-700">Loan Amount Requested (₹ in Lakhs)</label>
+                            {{ form.loan_amount }}
+                            {% if form.loan_amount.errors %}<small class="text-danger">{{ form.loan_amount.errors.0 }}</small>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.loan_amount_term.id_for_label }}" class="form-label fw-semibold text-slate-700">Loan Tenure (Months)</label>
+                            {{ form.loan_amount_term }}
+                            {% if form.loan_amount_term.errors %}<small class="text-danger">{{ form.loan_amount_term.errors.0 }}</small>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.interest_rate.id_for_label }}" class="form-label fw-semibold text-slate-700">Annual Interest Rate (%)</label>
+                            {{ form.interest_rate }}
+                            {% if form.interest_rate.errors %}<small class="text-danger">{{ form.interest_rate.errors.0 }}</small>{% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Live Financial Calculator & Health Badge -->
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <div class="row g-3 text-center text-md-start align-items-center">
+                            <div class="col-md-3">
+                                <small class="text-muted uppercase fw-bold">Total Monthly Income</small>
+                                <div class="fs-5 fw-extrabold text-success" id="totalIncomeDisplay">₹65,000 / month</div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted uppercase fw-bold">Annual Income (12 Months)</small>
+                                <div class="fs-6 fw-bold text-slate-900" id="annualIncomeDisplay">₹7,80,000 / year</div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted uppercase fw-bold">Estimated Monthly EMI</small>
+                                <div class="fs-5 fw-extrabold text-warning" id="emiDisplay">₹13,721 / month</div>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted uppercase fw-bold">EMI / Income Burden</small>
+                                <div class="fs-5 fw-extrabold text-primary mb-1" id="emiRatioDisplay">21.1%</div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center border-top pt-2">
+                            <span id="healthBadge" class="badge bg-success px-3 py-2 fs-6">
+                                <i class="fa-solid fa-circle-check me-1"></i> Healthy Repayment Burden (≤ 30%)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Expandable How are these calculations made -->
+                    <div class="mb-4">
+                        <button class="btn btn-sm btn-link text-decoration-none text-muted p-0" type="button" data-bs-toggle="collapse" data-bs-target="#howCalcsCollapse" aria-expanded="false" aria-controls="howCalcsCollapse">
+                            <i class="fa-solid fa-circle-info text-info me-1"></i> ⓘ How are these financial calculations made?
+                        </button>
+                        <div class="collapse mt-2" id="howCalcsCollapse">
+                            <div class="p-3 bg-light rounded-3 border small text-muted">
+                                <strong>Financial Formulas Applied:</strong><br>
+                                • <strong>Total Monthly Income:</strong> Applicant Income + Co-applicant Income<br>
+                                • <strong>Annual Income:</strong> Monthly Income × 12 months<br>
+                                • <strong>Standard Bank EMI:</strong> $P \times r \times (1+r)^n / ((1+r)^n - 1)$ where $r = \text{Rate} / (12 \times 100)$ & $n = \text{Tenure Months}$<br>
+                                • <strong>EMI Burden Ratio:</strong> $(\text{EMI} / \text{Monthly Income}) \times 100$
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="btnPrev2"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                        <button type="button" class="btn-blue" id="btnNext2">Next: Property & Credit <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Property & Credit Information -->
+                <div id="step3" style="display: none;">
+                    <h5 class="fw-bold text-slate-900 mb-3"><i class="fa-solid fa-building-user text-warning me-2"></i>Step 3: Property & Credit Information</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="{{ form.credit_history.id_for_label }}" class="form-label fw-semibold text-slate-700">Credit Score / Repayment Record</label>
+                            {{ form.credit_history }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.property_area.id_for_label }}" class="form-label fw-semibold text-slate-700">Property Location Area</label>
+                            {{ form.property_area }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-3 border-top">
+                        <button type="button" class="btn btn-outline-secondary" id="btnPrev3"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                        <button type="submit" class="btn-blue py-3 px-4">
+                            <i class="fa-solid fa-rocket"></i> Analyze Application →
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Animation Modal Overlay -->
+<div id="loadingOverlay">
+    <div class="loading-modal">
+        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+        <h4 class="fw-bold text-slate-900 mb-2">Analyzing Application...</h4>
+        <p class="text-muted small mb-4">Evaluating Machine Learning models & Neural Network.</p>
+        
+        <div class="d-flex flex-column gap-2 text-start small border-top pt-3">
+            <div id="status1" class="text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Validating applicant information...</div>
+            <div id="status2" class="text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Calculating financial indicators & EMI...</div>
+            <div id="status3" class="text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Preparing model features & preprocessing...</div>
+            <div id="status4" class="text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Running ML models & Neural Network...</div>
+            <div id="status5" class="text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Comparing model performance & risk score...</div>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('predictionForm');
-    const predictBtn = document.getElementById('predictBtn');
-    
-    form.addEventListener('submit', function(e) {
-        // Show loading state
-        predictBtn.disabled = true;
-        predictBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-        
-        // Validate credit history
-        const creditHistory = document.getElementById('id_credit_history');
-        if (creditHistory && creditHistory.value !== '') {
-            const val = parseFloat(creditHistory.value);
-            if (val !== 0 && val !== 1) {
-                e.preventDefault();
-                alert('Credit history must be either 0 or 1');
-                predictBtn.disabled = false;
-                predictBtn.innerHTML = '<i class="fas fa-rocket me-2"></i>Predict Loan Status';
-                return;
-            }
-        }
-    });
-    
-    // Add input validation for numeric fields
-    const numericInputs = document.querySelectorAll('input[type="number"]');
-    numericInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            if (this.value && parseFloat(this.value) < 0) {
-                this.classList.add('is-invalid');
-            } else {
-                this.classList.remove('is-invalid');
-            }
-        });
-    });
-});
-</script>
+<script src="{% static 'js/prediction.js' %}"></script>
 {% endblock %}

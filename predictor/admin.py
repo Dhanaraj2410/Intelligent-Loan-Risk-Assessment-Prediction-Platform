@@ -1,3 +1,10 @@
+# =============================================================================
+# admin.py - Django Admin Panel Configuration for LoanIQ Platform
+# =============================================================================
+# Customizes the Django Admin interface with colored badges, organized fieldsets,
+# search/filter capabilities, and date-based navigation for all models.
+# =============================================================================
+
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import LoanPrediction, ModelLog, UserFeedback
@@ -22,7 +29,7 @@ class LoanPredictionAdmin(admin.ModelAdmin):
         'credit_history'
     ]
     search_fields = ['id', 'applicant_income', 'loan_amount', 'ip_address']
-    readonly_fields = ['created_at', 'ip_address', 'user_agent']
+    readonly_fields = ['created_at', 'ip_address']
     date_hierarchy = 'created_at'
     list_per_page = 50
     
@@ -31,20 +38,23 @@ class LoanPredictionAdmin(admin.ModelAdmin):
             'fields': ('gender', 'married', 'dependents', 'education', 'self_employed')
         }),
         ('Financial Information', {
-            'fields': ('applicant_income', 'coapplicant_income', 'loan_amount', 
-                      'loan_amount_term', 'credit_history', 'property_area')
+            'fields': ('applicant_income', 'coapplicant_income', 'total_income', 'annual_income',
+                      'loan_amount', 'loan_amount_term', 'interest_rate', 'estimated_emi',
+                      'emi_income_ratio', 'credit_history', 'property_area')
         }),
         ('Prediction Results', {
-            'fields': ('prediction', 'probability'),
+            'fields': ('prediction', 'approval_probability', 'risk_score', 'risk_level', 'model_name'),
             'classes': ('collapse',)
         }),
         ('Metadata', {
-            'fields': ('created_at', 'ip_address', 'user_agent'),
+            'fields': ('created_at', 'ip_address'),
             'classes': ('collapse',)
         })
     )
     
     def prediction_badge(self, obj):
+        """Renders the prediction outcome as a color-coded Bootstrap badge
+        in the admin list view (green=Approved, red=Rejected, grey=Pending)."""
         if obj.prediction == 'Approved':
             color = 'success'
         elif obj.prediction == 'Rejected':
@@ -59,17 +69,18 @@ class LoanPredictionAdmin(admin.ModelAdmin):
     prediction_badge.short_description = 'Prediction'
     
     def probability_badge(self, obj):
-        if obj.probability:
-            if obj.probability >= 70:
+        prob = obj.approval_probability or obj.probability
+        if prob:
+            if prob >= 70:
                 color = 'success'
-            elif obj.probability >= 50:
+            elif prob >= 50:
                 color = 'warning'
             else:
                 color = 'danger'
             return format_html(
                 '<span class="badge bg-{}">{:.1f}%</span>',
                 color,
-                obj.probability
+                prob
             )
         return format_html('<span class="badge bg-secondary">N/A</span>')
     probability_badge.short_description = 'Confidence'
@@ -87,10 +98,10 @@ class LoanPredictionAdmin(admin.ModelAdmin):
 
 @admin.register(ModelLog)
 class ModelLogAdmin(admin.ModelAdmin):
-    list_display = ['id', 'prediction', 'model_accuracy', 'response_time', 'created_at']
-    list_filter = ['created_at']
-    readonly_fields = ['created_at']
-    search_fields = ['prediction__id']
+    list_display = ['id', 'model_name', 'accuracy', 'precision', 'recall', 'f1_score', 'roc_auc', 'trained_at', 'is_active']
+    list_filter = ['is_active', 'trained_at']
+    readonly_fields = ['trained_at']
+    search_fields = ['model_name']
 
 
 @admin.register(UserFeedback)
