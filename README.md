@@ -29,7 +29,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'loan_prediction',
         'USER': 'root',
-        'PASSWORD': 'Dhanaraj2410',
+        'PASSWORD': '...........',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
