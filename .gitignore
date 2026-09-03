@@ -9,6 +9,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+*.egg-info/
+dist/
+build/
 
 # Django
 *.log
@@ -21,6 +24,7 @@ staticfiles/
 # Environment Variables & Secrets
 .env
 .env.local
+.env.production
 
 # Jupyter
 .ipynb_checkpoints
@@ -28,7 +32,21 @@ staticfiles/
 # IDEs
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Test Coverage & Reports
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+
+# ML Model Artifacts (large binary files)
+# Uncomment if you want to exclude trained models from version control
+# models/ml/*.pkl
+# models/dl/*.keras
+# models/dl/*.pt
