@@ -11,7 +11,7 @@
 
 ---
 
-## 📌 Executive Overview
+## 📌 Executive Overview 
 
 The **Intelligent Loan Risk Assessment & Prediction Platform** is a production-grade machine learning and deep learning application designed to evaluate applicant financial profiles, calculate loan approval probabilities, estimate 0–100 risk scores, and categorize risk levels (**LOW**, **MEDIUM**, **HIGH**).
 
