@@ -1,6 +1,6 @@
 # Intelligent Loan Risk Assessment & Prediction Platform 
 
-> **An End-to-End Machine Learning & Deep Learning SaaS Application** 
+> **An End-to-End Machine Learning & Deep Learning SaaS Application**  
 
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Django](https://img.shields.io/badge/Django-5.1-092E20?style=for-the-badge&logo=django&logoColor=white)](https://djangoproject.com)
